@@ -7,7 +7,9 @@
 			"es2020",
 			"WebWorker"
 		],
-		"types": []
+		"types": [],
+		"skipLibCheck": true,
+		"skipDefaultLibCheck": true,
 	},
 	"include": [
 		"source"
