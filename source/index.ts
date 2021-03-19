@@ -1,4 +1,3 @@
-import EventEmitter = require('eventemitter3');
 import {default as pTimeout, TimeoutError} from 'p-timeout';
 import {Queue, RunFunction} from './queue';
 import PriorityQueue from './priority-queue';
@@ -18,7 +17,7 @@ const timeoutError = new TimeoutError();
 /**
 Promise queue with concurrency control.
 */
-export default class PQueue<QueueType extends Queue<RunFunction, EnqueueOptionsType> = PriorityQueue, EnqueueOptionsType extends QueueAddOptions = DefaultAddOptions> extends EventEmitter<'active' | 'idle' | 'add' | 'next'> {
+export default class PQueue<QueueType extends Queue<RunFunction, EnqueueOptionsType> = PriorityQueue, EnqueueOptionsType extends QueueAddOptions = DefaultAddOptions> extends EventTarget {
 	private readonly _carryoverConcurrencyCount: boolean;
 
 	private readonly _isIntervalIgnored: boolean;
@@ -31,9 +30,9 @@ export default class PQueue<QueueType extends Queue<RunFunction, EnqueueOptionsT
 
 	private _intervalEnd = 0;
 
-	private _intervalId?: NodeJS.Timeout;
+	private _intervalId?: number;
 
-	private _timeoutId?: NodeJS.Timeout;
+	private _timeoutId?: number;
 
 	private _queue: QueueType;
 
@@ -53,6 +52,18 @@ export default class PQueue<QueueType extends Queue<RunFunction, EnqueueOptionsT
 	private _timeout?: number;
 
 	private readonly _throwOnTimeout: boolean;
+
+	addEventListener(type: 'active' | 'idle' | 'add' | 'next', handler: (ev: Event) => void): void;
+	addEventListener(...args_: Parameters<typeof EventTarget.prototype.addEventListener>): void;
+	addEventListener(a: any, x: any, y?: any) {
+		super.addEventListener(a, x, y);
+	}
+
+	removeEventListener(type: 'active' | 'idle' | 'add' | 'next', handler: (ev: Event) => void): void;
+	removeEventListener(...args_: Parameters<typeof EventTarget.prototype.removeEventListener>): void;
+	removeEventListener(a: any, b: any, c?: any) {
+		super.removeEventListener(a, b, c);
+	}
 
 	constructor(options?: Options<QueueType, EnqueueOptionsType>) {
 		super();
@@ -99,7 +110,7 @@ export default class PQueue<QueueType extends Queue<RunFunction, EnqueueOptionsT
 	private _next(): void {
 		this._pendingCount--;
 		this._tryToStartAnother();
-		this.emit('next');
+		this.dispatchEvent(new Event('next'));
 	}
 
 	private _resolvePromises(): void {
@@ -109,7 +120,7 @@ export default class PQueue<QueueType extends Queue<RunFunction, EnqueueOptionsT
 		if (this._pendingCount === 0) {
 			this._resolveIdle();
 			this._resolveIdle = empty;
-			this.emit('idle');
+			this.dispatchEvent(new Event('idle'));
 		}
 	}
 
@@ -169,7 +180,7 @@ export default class PQueue<QueueType extends Queue<RunFunction, EnqueueOptionsT
 					return false;
 				}
 
-				this.emit('active');
+				this.dispatchEvent(new Event('active'));
 				job();
 
 				if (canInitializeInterval) {
@@ -264,7 +275,7 @@ export default class PQueue<QueueType extends Queue<RunFunction, EnqueueOptionsT
 
 			this._queue.enqueue(run, options);
 			this._tryToStartAnother();
-			this.emit('add');
+			this.dispatchEvent(new Event('add'));
 		});
 	}
 

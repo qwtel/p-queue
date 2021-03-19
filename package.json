@@ -1,5 +1,5 @@
 {
-	"name": "p-queue",
+	"name": "p-queue-browser",
 	"version": "6.6.2",
 	"description": "Promise queue with concurrency control",
 	"license": "MIT",
