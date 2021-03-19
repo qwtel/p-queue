@@ -6,18 +6,17 @@
 	"repository": "sindresorhus/p-queue",
 	"funding": "https://github.com/sponsors/sindresorhus",
 	"main": "dist/index.js",
-	"engines": {
-		"node": ">=10"
-	},
 	"scripts": {
 		"postinstall": "shx ls dist/index.js >> /dev/null 2>&1 || npm run build",
-    "build": "tsc -d -p tsconfig.json",
+		"build": "tsc -d -p tsconfig.json",
 		"test": "xo && npm run build && nyc ava",
 		"bench": "ts-node bench.ts",
 		"prepack": "shx rm -rf dist && npm run build"
 	},
 	"files": [
-		"dist"
+		"source",
+		"dist",
+		"*.json"
 	],
 	"types": "dist/index.d.ts",
 	"keywords": [
@@ -43,7 +42,6 @@
 		"bluebird"
 	],
 	"dependencies": {
-		"eventemitter3": "^4.0.7",
 		"p-timeout": "^4.1.0"
 	},
 	"devDependencies": {
