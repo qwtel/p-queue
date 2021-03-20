@@ -1,4 +1,4 @@
-# p-queue
+# p-queue-browser
 
 > Promise queue with concurrency control
 
@@ -16,18 +16,17 @@ Here we run only one promise at the time. For example, set `concurrency` to 4 to
 
 ```js
 const {default: PQueue} = require('p-queue');
-const got = require('got');
 
 const queue = new PQueue({concurrency: 1});
 
 (async () => {
-	await queue.add(() => got('https://sindresorhus.com'));
-	console.log('Done: sindresorhus.com');
+	await queue.add(() => fetch('https://workers.js.org'));
+	console.log('Done: 1');
 })();
 
 (async () => {
-	await queue.add(() => got('https://avajs.dev'));
-	console.log('Done: avajs.dev');
+	await queue.add(() => fetch('https://worker-tools.github.io'));
+	console.log('Done: 2');
 })();
 
 (async () => {
@@ -208,7 +207,7 @@ const {default: PQueue} = require('p-queue');
 const queue = new PQueue({concurrency: 2});
 
 let count = 0;
-queue.on('active', () => {
+queue.addEventListener('active', () => {
 	console.log(`Working on item #${++count}.  Size: ${queue.size}  Pending: ${queue.pending}`);
 });
 
@@ -228,7 +227,7 @@ const {default: PQueue} = require('p-queue');
 
 const queue = new PQueue();
 
-queue.on('idle', () => {
+queue.addEventListener('idle', () => {
 	console.log(`Queue is idle.  Size: ${queue.size}  Pending: ${queue.pending}`);
 });
 
@@ -259,10 +258,10 @@ const {default: PQueue} = require('p-queue');
 
 const queue = new PQueue();
 
-queue.on('add', () => {
+queue.addEventListener('add', () => {
 	console.log(`Task is added.  Size: ${queue.size}  Pending: ${queue.pending}`);
 });
-queue.on('next', () => {
+queue.addEventListener('next', () => {
 	console.log(`Task is completed.  Size: ${queue.size}  Pending: ${queue.pending}`);
 });
 
