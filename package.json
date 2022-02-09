@@ -7,11 +7,12 @@
 	"funding": "https://github.com/sponsors/sindresorhus",
 	"main": "dist/index.js",
 	"scripts": {
-		"postinstall": "shx ls dist/index.js >> /dev/null 2>&1 || npm run build",
+		"postinstall": "[ -f dist/index.js ] || npm run build",
+		"clean": "shx rm -r dist",
 		"build": "tsc -d -p tsconfig.json",
 		"test": "xo && npm run build && nyc ava",
 		"bench": "ts-node bench.ts",
-		"prepack": "shx rm -rf dist && npm run build"
+		"prepack": "npm run clean && npm run build"
 	},
 	"files": [
 		"source",
